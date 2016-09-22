@@ -22,8 +22,13 @@ const DefaultTag = "miller"
 // Sep represents the token part separator.
 const Sep = byte('.')
 
-// ErrSignature represents an invalid signature error.
-var ErrSignature = errors.New("miller: invalid signature")
+var (
+	// ErrInvalid represents an unprocessable token error.
+	ErrInvalid = errors.New("miller: invalid token")
+
+	// ErrSignature represents an invalid signature error.
+	ErrSignature = errors.New("miller: invalid signature")
+)
 
 // New returns a new Token.
 func New(tag string, key []byte, opts ...Option) *Token {
@@ -53,11 +58,14 @@ func (t *Token) Sign(v interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-// Verify parses a token and returns an error if the signature
+// Verify parses a token and returns an error if the token or signature
 // is invalid. If the signature is valid, the decoded payload is
 // stored in the value pointed to by v.
 func (t *Token) Verify(token string, v interface{}) error {
 	parts := bytes.SplitN([]byte(token), []byte{Sep}, 2)
+	if len(parts) < 2 {
+		return ErrInvalid
+	}
 	b, err := decode(parts[0])
 	if err != nil {
 		return err
