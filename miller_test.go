@@ -48,6 +48,14 @@ func TestVerifyErrInvalid(t *testing.T) {
 	}
 }
 
+func TestVerifyErrInvalidDecode(t *testing.T) {
+	m := New(DefaultTag, secret)
+	err := m.Verify("invalid.token", nil)
+	if err != ErrInvalid {
+		t.Fatal("should return invalid token error")
+	}
+}
+
 func TestSignVerifyTags(t *testing.T) {
 	const data = "foo"
 	m1 := New("tag1", secret)

@@ -68,11 +68,11 @@ func (t *Token) Verify(token string, v interface{}) error {
 	}
 	b, err := decode(parts[0])
 	if err != nil {
-		return err
+		return ErrInvalid
 	}
 	sig, err := decode(parts[1])
 	if err != nil {
-		return err
+		return ErrInvalid
 	}
 	mac := hash(b, t.deriveKey())
 	if !hmac.Equal(mac, sig) {
