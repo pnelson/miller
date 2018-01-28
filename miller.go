@@ -2,10 +2,10 @@
 package miller
 
 import (
-	"bytes"
 	"crypto/hmac"
 	"crypto/rand"
 	"errors"
+	"strings"
 )
 
 // Token represents the configuration for signing and
@@ -19,8 +19,8 @@ type Token struct {
 // DefaultTag represents the default key derivation tag.
 const DefaultTag = "miller"
 
-// Sep represents the token part separator.
-const Sep = byte('.')
+// sep represents the token part separator.
+const sep = "."
 
 var (
 	// ErrInvalid represents an unprocessable token error.
@@ -51,26 +51,23 @@ func (t *Token) Sign(v interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	var buf bytes.Buffer
-	buf.Write(encode(b))
-	buf.WriteByte(Sep)
-	buf.Write(encode(hash(b, t.deriveKey())))
-	return buf.String(), nil
+	token := encode(b) + sep + encode(hash(b, t.deriveKey()))
+	return token, nil
 }
 
 // Verify parses a token and returns an error if the token or signature
 // is invalid. If the signature is valid, the decoded payload is
 // stored in the value pointed to by v.
 func (t *Token) Verify(token string, v interface{}) error {
-	parts := bytes.SplitN([]byte(token), []byte{Sep}, 2)
-	if len(parts) < 2 {
+	i := strings.Index(token, sep)
+	if i == -1 {
 		return ErrInvalid
 	}
-	b, err := decode(parts[0])
+	b, err := decode(token[:i])
 	if err != nil {
 		return ErrInvalid
 	}
-	sig, err := decode(parts[1])
+	sig, err := decode(token[i+1:])
 	if err != nil {
 		return ErrInvalid
 	}
