@@ -2,7 +2,7 @@ package miller
 
 import (
 	"bytes"
-	"encoding/gob"
+	"encoding/json"
 )
 
 // Serializer represents the ability to encode and decode data.
@@ -15,14 +15,13 @@ type Serializer interface {
 }
 
 // DefaultSerializer is the default token serializer.
-// This serializer leverages encoding/gob for fast serialization.
-// See encoding/gob for more information on registering new types.
+// This serializer leverages encoding/json for fast serialization.
 type DefaultSerializer struct{}
 
 // Encode implements the Serializer interface.
 func (s DefaultSerializer) Encode(v interface{}) ([]byte, error) {
 	var buf bytes.Buffer
-	err := gob.NewEncoder(&buf).Encode(v)
+	err := json.NewEncoder(&buf).Encode(v)
 	if err != nil {
 		return nil, err
 	}
@@ -32,5 +31,5 @@ func (s DefaultSerializer) Encode(v interface{}) ([]byte, error) {
 // Decode implements the Serializer interface.
 func (s DefaultSerializer) Decode(b []byte, v interface{}) error {
 	buf := bytes.NewBuffer(b)
-	return gob.NewDecoder(buf).Decode(v)
+	return json.NewDecoder(buf).Decode(v)
 }

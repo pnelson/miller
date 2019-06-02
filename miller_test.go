@@ -21,9 +21,9 @@ func TestSignVerify(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	want := "BgwAA2Zvbw.8673uFwUVD_sofU003amO22rRf4kp0cnQPybSOM8VGE"
+	want := "ImZvbyIK.0rVD2UDu90K_qTLxLivHenuSEYdcWu6blP3ezwHLiyQ"
 	if token != want {
-		t.Fatalf("Sign\nhave %q\n want %q", token, want)
+		t.Fatalf("Sign\nhave %q\nwant %q", token, want)
 	}
 	var s string
 	err = m.Verify(token, &s)
@@ -31,7 +31,7 @@ func TestSignVerify(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if s != data {
-		t.Fatalf("Verify\nhave %q\n want %q", s, data)
+		t.Fatalf("Verify\nhave %q\nwant %q", s, data)
 	}
 	token = token[:len(token)-1] // tampered
 	err = m.Verify(token, &s)
